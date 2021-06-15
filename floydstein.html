@@ -17,7 +17,7 @@
     <canvas id="canvas" width="1024" height="643"></canvas>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <script type="text/JavaScript">
-    // https://en.wikipedia.org/wiki/Floyd–Steinberg_dithering
+        //https://en.wikipedia.org/wiki/Floyd–Steinberg_dithering
         let canvas = document.getElementById("canvas");
         let context = canvas.getContext("2d");
         let img = new Image();
@@ -36,68 +36,67 @@
           let oc = parseInt((o.r + o.g + o.b) / 3);
           let nc = parseInt((n.r + n.g + n.b) / 3);
           return { r: oc - nc, g: oc - nc, b: oc - nc, a: 255 };
-      }
+        }
 
-      //dither image on page load or refresh
-      img.addEventListener("load", () => {
-          let w = img.width;
-          let h = img.height;
+        //dither image on page load or refresh
+        img.addEventListener("load", () => {
+            let w = img.width;
+            let h = img.height;
 
-          canvas.setAttribute("width", w);
-          canvas.setAttribute("height", h);
+            canvas.setAttribute("width", w);
+            canvas.setAttribute("height", h);
 
-          //draw image and then extract its data to dither
-          context.drawImage(img, 0, 0);
-          let imageData = context.getImageData(0, 0, w, h);
-          let data = imageData.data;
-          let len = data.length;
+            //draw image and then extract its data to dither
+            context.drawImage(img, 0, 0);
+            let imageData = context.getImageData(0, 0, w, h);
+            let data = imageData.data;
+            let len = data.length;
 
-          //iterate through all pixels on canvas and add quant error to them
-          for (let i = 0; i < len; i += 4) {
-            let oldColor = {
-                    r: data[i+0],
-                    g: data[i+1],
-                    b: data[i+2],
-                    a: data[i+3]
-            };
-            let newColor = convertPalette(oldColor);
-            data[i+0] = newColor.r;
-            data[i+1] = newColor.g;
-            data[i+2] = newColor.b;
-            data[i+3] = newColor.a;
-            
-            let quantError = quantizationError(oldColor, newColor);
+            //iterate through all pixels on canvas and add quant error to them
+            for (let i = 0; i < len; i += 4) {
+              let oldColor = {
+                      r: data[i+0],
+                      g: data[i+1],
+                      b: data[i+2],
+                      a: data[i+3]
+              };
+              let newColor = convertPalette(oldColor);
+              data[i+0] = newColor.r;
+              data[i+1] = newColor.g;
+              data[i+2] = newColor.b;
+              data[i+3] = newColor.a;
 
-            try {
-                data[i+0+4] += 7/16 * quantError.r;
-                data[i+1+4] += 7/16 * quantError.g;
-                data[i+2+4] += 7/16 * quantError.b;
-                data[i+3+4] += 7/16 * quantError.a;
-            } catch(e) {console.log(e)}
-            try {
-                data[i+0-4+w*4] += 3/16 * quantError.r;
-                data[i+1-4+w*4] += 3/16 * quantError.g;
-                data[i+2-4+w*4] += 3/16 * quantError.b;
-                data[i+3-4+w*4] += 3/16 * quantError.a;
-            } catch(e) {console.log(e)}
-            try {
-                data[i+0+w*4] += 5/16 * quantError.r;
-                data[i+1+w*4] += 5/16 * quantError.g;
-                data[i+2+w*4] += 5/16 * quantError.b;
-                data[i+3+w*4] += 5/16 * quantError.a;
-            } catch(e) {console.log(e)}
-            try {
-                data[i+0+4+w*4] += 1/16 * quantError.r;
-                data[i+1+4+w*4] += 1/16 * quantError.g;
-                data[i+2+4+w*4] += 1/16 * quantError.b;
-                data[i+3+4+w*4] += 1/16 * quantError.a;
-            } catch(e) {console.log(e)}
-          }
-          context.putImageData(imageData, 0, 0);  
-          
-      }) 
-      //image that gets dithered, replace link with another image to dither it
-      img.src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/1146px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"
+              let quantError = quantizationError(oldColor, newColor);
+
+              try {
+                  data[i+0+4] += 7/16 * quantError.r;
+                  data[i+1+4] += 7/16 * quantError.g;
+                  data[i+2+4] += 7/16 * quantError.b;
+                  data[i+3+4] += 7/16 * quantError.a;
+              } catch(e) {console.log(e)}
+              try {
+                  data[i+0-4+w*4] += 3/16 * quantError.r;
+                  data[i+1-4+w*4] += 3/16 * quantError.g;
+                  data[i+2-4+w*4] += 3/16 * quantError.b;
+                  data[i+3-4+w*4] += 3/16 * quantError.a;
+              } catch(e) {console.log(e)}
+              try {
+                  data[i+0+w*4] += 5/16 * quantError.r;
+                  data[i+1+w*4] += 5/16 * quantError.g;
+                  data[i+2+w*4] += 5/16 * quantError.b;
+                  data[i+3+w*4] += 5/16 * quantError.a;
+              } catch(e) {console.log(e)}
+              try {
+                  data[i+0+4+w*4] += 1/16 * quantError.r;
+                  data[i+1+4+w*4] += 1/16 * quantError.g;
+                  data[i+2+4+w*4] += 1/16 * quantError.b;
+                  data[i+3+4+w*4] += 1/16 * quantError.a;
+              } catch(e) {console.log(e)}
+            }
+            context.putImageData(imageData, 0, 0);  
+        }) 
+        //image that gets dithered, replace link with another image to dither it
+        img.src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg/1146px-Sandro_Botticelli_-_La_nascita_di_Venere_-_Google_Art_Project_-_edited.jpg"
     </script>
   </body>
 </html>
